@@ -113,6 +113,13 @@ System.err.println("older than: " + new java.util.Date(olderThan));
 		if (baseDirectory == null) return false;
 		final File srcDirectory = new File(baseDirectory, "src/main/java");
 		if (!srcDirectory.exists()) return false;
+
+		// before running, remove possibly outdated annotations
+		final File[] obsoleteAnnotations = new File(directory, "META-INF/annotations").listFiles();
+		if (obsoleteAnnotations != null) {
+			for (final File annotation : obsoleteAnnotations) annotation.delete();
+		}
+
 		List<String> aptArgs = new ArrayList<String>();
 		//aptArgs.add("-nocompile");
 		aptArgs.add("-factory");
