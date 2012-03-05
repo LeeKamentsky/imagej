@@ -1,4 +1,4 @@
-package imagej.ui.swing.tools.overlay;
+package imagej.ui.swing.overlay;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

@@ -45,6 +45,7 @@ import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
+import imagej.ui.swing.overlay.PointFigure;
 import imagej.ui.swing.tools.AngleTool;
 
 import java.awt.Shape;

@@ -44,6 +44,7 @@ import imagej.ui.swing.overlay.IJBezierTool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
+import imagej.ui.swing.overlay.PolygonFigure;
 import imagej.util.Log;
 
 import java.awt.Graphics2D;
