@@ -47,6 +47,7 @@ import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.ui.swing.tools.AngleTool;
 
+import java.awt.Shape;
 
 import net.imglib2.RealPoint;
 
@@ -145,6 +146,8 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay, P
 		return new IJCreationTool(display, this, listener);
 	}
 	
+	public Shape toShape(final PointFigure figure) {
+		throw new UnsupportedOperationException();
 	}
 
 }

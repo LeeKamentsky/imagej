@@ -46,6 +46,7 @@ import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.Point2D;
 
 import net.imglib2.RealPoint;
@@ -135,6 +136,11 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay, Lin
 		final OverlayCreatedListener listener)
 	{
 		return new IJCreationTool(display, this, listener);
+	}
+
+	@Override
+	public Shape toShape(final LineFigure figure) {
+		return figure.getBezierPath().toGeneralPath();
 	}
 
 }

@@ -47,6 +47,7 @@ import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.util.Log;
 
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.util.Arrays;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
@@ -168,6 +169,11 @@ public class PolygonAdapter extends
 		final OverlayCreatedListener listener)
 	{
 		return new IJBezierTool(display, this, listener);
+	}
+
+	@Override
+	public Shape toShape(final PolygonFigure figure) {
+		return figure.getBezierPath().toGeneralPath();
 	}
 
 }

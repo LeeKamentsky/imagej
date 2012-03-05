@@ -55,6 +55,7 @@ import imagej.util.RealCoords;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -193,6 +194,11 @@ public class RectangleAdapter extends
 		final OverlayCreatedListener listener)
 	{
 		return new IJCreationTool(display, this, listener);
+	}
+
+	@Override
+	public Shape toShape(final RectangleFigure figure) {
+		return figure.getBounds();
 	}
 
 }

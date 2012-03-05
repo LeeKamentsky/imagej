@@ -46,6 +46,7 @@ import imagej.util.ColorRGBA;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
+import java.awt.Shape;
 
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
@@ -182,4 +183,6 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay, F extend
 		int a = settings.getAlpha();
 		return new Color(r,g,b,a);
 	}
+
+	public abstract Shape toShape(final F figure);
 }

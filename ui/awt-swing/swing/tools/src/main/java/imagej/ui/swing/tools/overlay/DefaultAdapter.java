@@ -44,6 +44,7 @@ import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.util.ColorRGB;
 
 import java.awt.Color;
+import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -153,4 +154,8 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay, Imag
 		return new IJCreationTool(display, this, listener);
 	}
 
+	@Override
+	public Shape toShape(final ImageFigure figure) {
+		throw new UnsupportedOperationException();
+	}
 }
