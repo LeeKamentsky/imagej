@@ -57,8 +57,8 @@ import org.jhotdraw.draw.decoration.ArrowTip;
  * 
  * @author Lee Kamentsky
  */
-public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
-	extends AbstractTool implements IJHotDrawOverlayAdapter
+public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay, F extends Figure>
+	extends AbstractTool implements IJHotDrawOverlayAdapter<F>
 {
 
 	// NB: The line styles here are taken from
@@ -84,7 +84,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 	}
 
 	@Override
-	public void updateFigure(final OverlayView overlay, final Figure figure) {
+	public void updateFigure(final OverlayView overlay, final F figure) {
 		final ColorRGB lineColor = overlay.getData().getLineColor();
 		if (overlay.getData().getLineStyle() != Overlay.LineStyle.NONE) {
 			figure.set(AttributeKeys.STROKE_COLOR, AWTColors.getColor(lineColor));
@@ -137,7 +137,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView overlay) {
+	public void updateOverlay(final F figure, final OverlayView overlay) {
 		final Color strokeColor = figure.get(AttributeKeys.STROKE_COLOR);
 		overlay.getData().setLineColor(AWTColors.getColorRGB(strokeColor));
 		// The line style is intentionally omitted here because it is ambiguous and

@@ -62,7 +62,7 @@ import org.jhotdraw.draw.Figure;
 	iconPath = "/icons/tools/point.png", priority = PointAdapter.PRIORITY,
 	enabled = true)
 @JHotDrawOverlayAdapter(priority = PointAdapter.PRIORITY)
-public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
+public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay, PointFigure> {
 
 	public static final int PRIORITY = AngleTool.PRIORITY - 1;
 
@@ -87,7 +87,7 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 	}
 
 	@Override
-	public void updateFigure(final OverlayView overlayView, final Figure figure) {
+	public void updateFigure(final OverlayView overlayView, final PointFigure figure) {
 		super.updateFigure(overlayView, figure);
 		assert figure instanceof PointFigure;
 		final PointFigure point = (PointFigure) figure;
@@ -101,7 +101,7 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView overlayView)
+	public void updateOverlay(final PointFigure figure, final OverlayView overlayView)
 	{
 		super.updateOverlay(figure, overlayView);
 		assert figure instanceof PointFigure;

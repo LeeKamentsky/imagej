@@ -77,7 +77,7 @@ import org.jhotdraw.draw.RectangleFigure;
 	priority = RectangleAdapter.PRIORITY, enabled = true)
 @JHotDrawOverlayAdapter(priority = RectangleAdapter.PRIORITY)
 public class RectangleAdapter extends
-	AbstractJHotDrawOverlayAdapter<RectangleOverlay>
+	AbstractJHotDrawOverlayAdapter<RectangleOverlay, RectangleFigure>
 {
 
 	public static final int PRIORITY = 100;
@@ -123,8 +123,8 @@ public class RectangleAdapter extends
 	}
 
 	@Override
-	public void updateFigure(final OverlayView overlay, final Figure f) {
-		super.updateFigure(overlay, f);
+	public void updateFigure(final OverlayView overlay, final RectangleFigure figure) {
+		super.updateFigure(overlay, figure);
 		final RectangleOverlay rectangleOverlay =
 			downcastOverlay(overlay.getData());
 		final RectangleRegionOfInterest roi =
@@ -135,11 +135,11 @@ public class RectangleAdapter extends
 		final double h = roi.getExtent(1);
 		final Point2D.Double anch = new Point2D.Double(x0, y0);
 		final Point2D.Double lead = new Point2D.Double(x0 + w, y0 + h);
-		f.setBounds(anch, lead);
+		figure.setBounds(anch, lead);
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView overlay) {
+	public void updateOverlay(final RectangleFigure figure, final OverlayView overlay) {
 		super.updateOverlay(figure, overlay);
 		final RectangleOverlay rOverlay = downcastOverlay(overlay.getData());
 		final RectangleRegionOfInterest roi = rOverlay.getRegionOfInterest();

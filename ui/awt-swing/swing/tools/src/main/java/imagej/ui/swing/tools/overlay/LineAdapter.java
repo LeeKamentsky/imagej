@@ -65,7 +65,7 @@ import org.jhotdraw.geom.BezierPath.Node;
 	description = "Straight line overlays", iconPath = "/icons/tools/line.png",
 	priority = LineAdapter.PRIORITY, enabled = true)
 @JHotDrawOverlayAdapter(priority = LineAdapter.PRIORITY)
-public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
+public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay, LineFigure> {
 
 	public static final int PRIORITY = PolygonAdapter.PRIORITY - 1;
 
@@ -100,7 +100,7 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 	}
 
 	@Override
-	public void updateFigure(final OverlayView overlayView, final Figure figure) {
+	public void updateFigure(final OverlayView overlayView, final LineFigure figure) {
 		super.updateFigure(overlayView, figure);
 		assert figure instanceof LineFigure;
 		final LineFigure line = (LineFigure) figure;
@@ -114,7 +114,7 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView overlayView)
+	public void updateOverlay(final LineFigure figure, final OverlayView overlayView)
 	{
 		super.updateOverlay(figure, overlayView);
 		assert figure instanceof LineFigure;

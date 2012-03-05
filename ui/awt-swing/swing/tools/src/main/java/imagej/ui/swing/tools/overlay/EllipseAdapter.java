@@ -67,7 +67,7 @@ import org.jhotdraw.draw.Figure;
 	enabled = true)
 @JHotDrawOverlayAdapter(priority = EllipseAdapter.PRIORITY)
 public class EllipseAdapter extends
-	AbstractJHotDrawOverlayAdapter<EllipseOverlay>
+	AbstractJHotDrawOverlayAdapter<EllipseOverlay, EllipseFigure>
 {
 
 	public static final int PRIORITY = RectangleAdapter.PRIORITY - 1;
@@ -75,11 +75,6 @@ public class EllipseAdapter extends
 	static protected EllipseOverlay downcastOverlay(final Overlay roi) {
 		assert (roi instanceof EllipseOverlay);
 		return (EllipseOverlay) roi;
-	}
-
-	static protected EllipseFigure downcastFigure(final Figure figure) {
-		assert (figure instanceof EllipseFigure);
-		return (EllipseFigure) figure;
 	}
 
 	@Override
@@ -116,10 +111,9 @@ public class EllipseAdapter extends
 	}
 
 	@Override
-	public void updateFigure(final OverlayView o, final Figure f) {
-		super.updateFigure(o, f);
+	public void updateFigure(final OverlayView o, final EllipseFigure figure) {
+		super.updateFigure(o, figure);
 		final EllipseOverlay overlay = downcastOverlay(o.getData());
-		final EllipseFigure figure = downcastFigure(f);
 		final EllipseRegionOfInterest eRoi = overlay.getRegionOfInterest();
 		final double centerX = eRoi.getOrigin(0);
 		final double centerY = eRoi.getOrigin(1);
@@ -131,11 +125,10 @@ public class EllipseAdapter extends
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView o) {
+	public void updateOverlay(final EllipseFigure figure, final OverlayView o) {
 		super.updateOverlay(figure, o);
 		final EllipseOverlay overlay = downcastOverlay(o.getData());
-		final EllipseFigure eFigure = downcastFigure(figure);
-		final Rectangle2D.Double r = eFigure.getBounds();
+		final Rectangle2D.Double r = figure.getBounds();
 		final RealPoint ptCenter =
 			new RealPoint(new double[] { r.x + r.width / 2, r.y + r.height / 2 });
 		final EllipseRegionOfInterest eRoi = overlay.getRegionOfInterest();

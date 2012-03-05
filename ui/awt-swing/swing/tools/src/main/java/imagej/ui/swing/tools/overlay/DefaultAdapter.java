@@ -69,7 +69,7 @@ import org.jhotdraw.draw.ImageFigure;
  * @author Lee Kamentsky
  */
 @JHotDrawOverlayAdapter(priority = DefaultAdapter.PRIORITY)
-public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
+public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay, ImageFigure> {
 
 	static public final int PRIORITY = 0;
 
@@ -94,7 +94,7 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 	}
 
 	@Override
-	public void updateFigure(final OverlayView overlay, final Figure figure) {
+	public void updateFigure(final OverlayView overlay, final ImageFigure figure) {
 		super.updateFigure(overlay, figure);
 
 		// Override the base: set the fill color to transparent.

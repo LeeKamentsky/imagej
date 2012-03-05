@@ -46,7 +46,7 @@ import org.jhotdraw.draw.Figure;
  * 
  * @author Lee Kamentsky
  */
-public interface IJHotDrawOverlayAdapter {
+public interface IJHotDrawOverlayAdapter<F extends Figure> {
 
 	/**
 	 * @return the priority of this adapter: higher priority adapters will be
@@ -90,7 +90,7 @@ public interface IJHotDrawOverlayAdapter {
 	 * @param overlay the overlay that needs to be changed to bring it in-sync
 	 *          with the figure.
 	 */
-	void updateOverlay(Figure figure, OverlayView overlay);
+	void updateOverlay(F figure, OverlayView overlay);
 
 	/**
 	 * Update the appearance of the figure to match the overlay
@@ -98,7 +98,7 @@ public interface IJHotDrawOverlayAdapter {
 	 * @param overlay the overlay to be represented by the figure
 	 * @param figure the figure that is to be made to look like the overlay
 	 */
-	void updateFigure(OverlayView overlay, Figure figure);
+	void updateFigure(OverlayView overlay, F figure);
 
 	JHotDrawTool getCreationTool(ImageDisplay display,
 		OverlayCreatedListener listener);

@@ -68,15 +68,10 @@ import org.jhotdraw.geom.BezierPath.Node;
 	enabled = true)
 @JHotDrawOverlayAdapter(priority = PolygonAdapter.PRIORITY)
 public class PolygonAdapter extends
-	AbstractJHotDrawOverlayAdapter<PolygonOverlay>
+	AbstractJHotDrawOverlayAdapter<PolygonOverlay, PolygonFigure>
 {
 
 	public static final int PRIORITY = EllipseAdapter.PRIORITY - 1;
-
-	static private BezierFigure downcastFigure(final Figure figure) {
-		assert figure instanceof BezierFigure;
-		return (BezierFigure) figure;
-	}
 
 	static private PolygonOverlay downcastOverlay(final Overlay overlay) {
 		assert overlay instanceof PolygonOverlay;
@@ -116,18 +111,17 @@ public class PolygonAdapter extends
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView overlay) {
+	public void updateOverlay(final PolygonFigure figure, final OverlayView overlay) {
 		super.updateOverlay(figure, overlay);
-		final BezierFigure b = downcastFigure(figure);
 		final PolygonOverlay poverlay = downcastOverlay(overlay.getData());
 		final PolygonRegionOfInterest roi = poverlay.getRegionOfInterest();
-		final int nodeCount = b.getNodeCount();
+		final int nodeCount = figure.getNodeCount();
 		while (roi.getVertexCount() > nodeCount) {
 			roi.removeVertex(nodeCount);
 			Log.debug("Removed node from overlay.");
 		}
 		for (int i = 0; i < nodeCount; i++) {
-			final Node node = b.getNode(i);
+			final Node node = figure.getNode(i);
 			final double[] position = new double[] { node.x[0], node.y[0] };
 			if (roi.getVertexCount() == i) {
 				roi.addVertex(i, new RealPoint(position));
@@ -146,23 +140,22 @@ public class PolygonAdapter extends
 	}
 
 	@Override
-	public void updateFigure(final OverlayView overlay, final Figure figure) {
+	public void updateFigure(final OverlayView overlay, final PolygonFigure figure) {
 		super.updateFigure(overlay, figure);
-		final BezierFigure b = downcastFigure(figure);
 		final PolygonOverlay pOverlay = downcastOverlay(overlay.getData());
 		final PolygonRegionOfInterest roi = pOverlay.getRegionOfInterest();
 		final int vertexCount = roi.getVertexCount();
-		while (b.getNodeCount() > vertexCount)
-			b.removeNode(vertexCount);
+		while (figure.getNodeCount() > vertexCount)
+			figure.removeNode(vertexCount);
 		for (int i = 0; i < vertexCount; i++) {
 			final RealLocalizable vertex = roi.getVertex(i);
-			if (b.getNodeCount() == i) {
+			if (figure.getNodeCount() == i) {
 				final Node node =
 					new Node(vertex.getDoublePosition(0), vertex.getDoublePosition(1));
-				b.addNode(node);
+				figure.addNode(node);
 			}
 			else {
-				final Node node = b.getNode(i);
+				final Node node = figure.getNode(i);
 				node.mask = 0;
 				Arrays.fill(node.x, vertex.getDoublePosition(0));
 				Arrays.fill(node.y, vertex.getDoublePosition(1));
