@@ -151,7 +151,7 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay, Imag
 	public JHotDrawTool getCreationTool(final ImageDisplay display,
 		final OverlayCreatedListener listener)
 	{
-		return new IJCreationTool(display, this, listener);
+		return new IJCreationTool<ImageFigure>(display, this, listener);
 	}
 
 	@Override

@@ -193,7 +193,7 @@ public class RectangleAdapter extends
 	public JHotDrawTool getCreationTool(final ImageDisplay display,
 		final OverlayCreatedListener listener)
 	{
-		return new IJCreationTool(display, this, listener);
+		return new IJCreationTool<RectangleFigure>(display, this, listener);
 	}
 
 	@Override

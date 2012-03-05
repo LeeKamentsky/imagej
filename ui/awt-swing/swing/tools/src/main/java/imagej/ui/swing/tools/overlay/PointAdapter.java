@@ -144,7 +144,7 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay, P
 	public JHotDrawTool getCreationTool(final ImageDisplay display,
 		final OverlayCreatedListener listener)
 	{
-		return new IJCreationTool(display, this, listener);
+		return new IJCreationTool<PointFigure>(display, this, listener);
 	}
 	
 	public Shape toShape(final PointFigure figure) {

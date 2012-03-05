@@ -143,7 +143,7 @@ public class EllipseAdapter extends
 	public JHotDrawTool getCreationTool(final ImageDisplay display,
 		final OverlayCreatedListener listener)
 	{
-		return new IJCreationTool(display, this, listener);
+		return new IJCreationTool<EllipseFigure>(display, this, listener);
 	}
 
 	@Override

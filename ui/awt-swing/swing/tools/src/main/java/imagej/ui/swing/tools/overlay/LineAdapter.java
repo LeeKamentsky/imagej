@@ -135,7 +135,7 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay, Lin
 	public JHotDrawTool getCreationTool(final ImageDisplay display,
 		final OverlayCreatedListener listener)
 	{
-		return new IJCreationTool(display, this, listener);
+		return new IJCreationTool<LineFigure>(display, this, listener);
 	}
 
 	@Override

@@ -58,11 +58,11 @@ public class IJBezierTool extends BezierTool implements JHotDrawTool {
 	 */
 	private static final long serialVersionUID = 1L;
 	private final ImageDisplay display;
-	private final IJHotDrawOverlayAdapter adapter;
+	private final IJHotDrawOverlayAdapter<PolygonFigure> adapter;
 	private final EventListenerList listeners = new EventListenerList();
 
 	public IJBezierTool(final ImageDisplay display,
-		final IJHotDrawOverlayAdapter adapter,
+		final IJHotDrawOverlayAdapter<PolygonFigure> adapter,
 		final OverlayCreatedListener... listeners)
 	{
 		super((BezierFigure) adapter.createDefaultFigure());
@@ -107,7 +107,7 @@ public class IJBezierTool extends BezierTool implements JHotDrawTool {
 		final Overlay overlay = adapter.createNewOverlay();
 		final SwingOverlayView view =
 			new SwingOverlayView(display, overlay, figure);
-		adapter.updateOverlay(figure, view);
+		adapter.updateOverlay((PolygonFigure)figure, view);
 		fireOverlayCreatedEvent(view, figure);
 	}
 

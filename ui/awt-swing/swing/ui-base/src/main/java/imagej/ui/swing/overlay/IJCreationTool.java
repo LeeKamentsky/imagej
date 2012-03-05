@@ -49,18 +49,18 @@ import org.jhotdraw.draw.tool.CreationTool;
  * 
  * @author Lee Kamentsky
  */
-public class IJCreationTool extends CreationTool implements JHotDrawTool {
+public class IJCreationTool<F extends Figure> extends CreationTool implements JHotDrawTool {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private final ImageDisplay display;
-	private final IJHotDrawOverlayAdapter adapter;
+	private final IJHotDrawOverlayAdapter<F> adapter;
 	private final EventListenerList listeners = new EventListenerList();
 
 	public IJCreationTool(final ImageDisplay display,
-		final IJHotDrawOverlayAdapter adapter,
+		final IJHotDrawOverlayAdapter<F> adapter,
 		final OverlayCreatedListener... listeners)
 	{
 		super(adapter.createDefaultFigure());
@@ -97,13 +97,14 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 		return adapter.createDefaultFigure();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void creationFinished(final Figure figure) {
 		super.creationFinished(figure);
 		final Overlay overlay = adapter.createNewOverlay();
 		final SwingOverlayView view =
 			new SwingOverlayView(display, overlay, figure);
-		adapter.updateOverlay(figure, view);
+		adapter.updateOverlay((F)figure, view);
 		fireOverlayCreatedEvent(view, figure);
 	}
 
