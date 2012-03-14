@@ -201,6 +201,9 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		if (overlay instanceof PolygonOverlay) {
 			return createPolygonRoi((PolygonOverlay) overlay);
 		}
+		if (overlay instanceof GeneralPathOverlay) {
+			return createGeneralPathRoi((GeneralPathOverlay) overlay);
+		}
 		if (overlay instanceof BinaryMaskOverlay) {
 			return createBinaryMaskRoi((BinaryMaskOverlay) overlay);
 		}
@@ -291,6 +294,26 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		final Roi roi = new PolygonRoi(x, y, vertexCount, Roi.POLYGON);
 		assignPropertiesToRoi(roi, overlay);
 		return roi;
+	}
+
+	private Roi createGeneralPathRoi(final GeneralPathOverlay overlay) {
+		final GeneralPathRegionOfInterest region = overlay.getRegionOfInterest();
+		final int vertexCount = region.getVertexCount();
+		if (vertexCount == 1) return createPointRoi(overlay);
+		if (vertexCount == 2) return createLineRoi(overlay);
+		final float[] x = new float[vertexCount];
+		final float[] y = new float[vertexCount];
+		for (int v = 0; v < vertexCount; v++) {
+			final RealLocalizable vertex = region.getVertex(v);
+			x[v] = vertex.getFloatPosition(0);
+			y[v] = vertex.getFloatPosition(1);
+		}
+throw new RuntimeException("TODO");
+		/*
+		final Roi roi = new ShapeRoi(x, y, vertexCount, Roi.POLYGON);
+		assignPropertiesToRoi(roi, overlay);
+		return roi;
+		*/
 	}
 
 	// NB - there is some overloading here with createPointRoi.
@@ -453,6 +476,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 			case Roi.COMPOSITE:
 				Log.warn("====> COMPOSITE: " + roi);
 				final ShapeRoi shapeRoi = (ShapeRoi) roi;
+throw new RuntimeException("TODO");
+				/*
 				final Roi[] rois = shapeRoi.getRois();
 				final int xO = xOff + xOff + shapeRoi.getBounds().x;
 				final int yO = yOff + shapeRoi.getBounds().y;
@@ -478,12 +503,15 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 					}
 				}
 				final CompositeOverlay coverlay = new CompositeOverlay(context, croi);
+				*/
 				/*
 				 * An arbitrary guess - set the fill color to red with a 1/3 alpha
 				 */
+				/*
 				coverlay.setFillColor(new ColorRGB(255, 0, 0));
 				coverlay.setAlpha(80);
 				overlays.add(coverlay);
+				*/
 				break;
 			default:
 				Log.warn("====> OTHER (" + roi.getType() + ", " + "): " + roi);
@@ -569,6 +597,29 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		}
 		assignPropertiesToOverlay(overlay, roi);
 		return overlay;
+	}
+
+	@SuppressWarnings("unused")
+	private GeneralPathOverlay createGeneralPathOverlay(final Roi roi, final int xOff,
+		final int yOff)
+	{
+		assert roi instanceof ShapeRoi;
+		final ShapeRoi polygonRoi = (ShapeRoi) roi;
+		final GeneralPathOverlay overlay = new GeneralPathOverlay(context);
+		final GeneralPathRegionOfInterest region = overlay.getRegionOfInterest();
+throw new RuntimeException("TODO");
+		/*
+		final int[] xCoords = polygonRoi.getXCoordinates();
+		final int[] yCoords = polygonRoi.getYCoordinates();
+		final int x0 = polygonRoi.getBounds().x;
+		final int y0 = polygonRoi.getBounds().y;
+		for (int i = 0; i < xCoords.length; i++) {
+			final double x = xCoords[i] + x0, y = yCoords[i] + y0;
+			region.addVertex(i, new RealPoint(x, y));
+		}
+		assignPropertiesToOverlay(overlay, roi);
+		return overlay;
+		*/
 	}
 
 	@SuppressWarnings("unused")
