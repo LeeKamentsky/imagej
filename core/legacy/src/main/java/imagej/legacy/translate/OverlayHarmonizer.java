@@ -64,6 +64,7 @@ import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -559,20 +560,40 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		assert roi instanceof ShapeRoi;
 		final ShapeRoi polygonRoi = (ShapeRoi) roi;
 		final GeneralPathOverlay overlay = new GeneralPathOverlay(context);
-		final GeneralPathSegmentHandler region = overlay.getRegionOfInterest();
-throw new RuntimeException("TODO");
-		/*
-		final int[] xCoords = polygonRoi.getXCoordinates();
-		final int[] yCoords = polygonRoi.getYCoordinates();
-		final int x0 = polygonRoi.getBounds().x;
-		final int y0 = polygonRoi.getBounds().y;
-		for (int i = 0; i < xCoords.length; i++) {
-			final double x = xCoords[i] + x0, y = yCoords[i] + y0;
-			region.addVertex(i, new RealPoint(x, y));
+		final GeneralPathRegionOfInterest region = overlay.getRegionOfInterest();
+		region.reset();
+		final double[] coords = new double[6];
+System.err.println("got a shape roi");
+		for (final PathIterator iterator = polygonRoi.getShape().getPathIterator(null); !iterator.isDone(); iterator.next()) {
+			int type = iterator.currentSegment(coords);
+			switch (type) {
+				case PathIterator.SEG_MOVETO:
+					region.moveTo(coords[0], coords[1]);
+System.err.println("move to " + coords[0] + ", " + coords[1]);
+					break;
+				case PathIterator.SEG_LINETO:
+					region.lineTo(coords[0], coords[1]);
+System.err.println("line to " + coords[0] + ", " + coords[1]);
+					break;
+				case PathIterator.SEG_QUADTO:
+					region.quadTo(coords[0], coords[1], coords[2], coords[3]);
+System.err.println("quad to " + coords[0] + ", " + coords[1] + "; " + coords[2] + ", " + coords[3]);
+					break;
+				case PathIterator.SEG_CUBICTO:
+					region.cubicTo(coords[0], coords[1], coords[2], coords[3], coords[4], coords[5]);
+System.err.println("cubic to " + coords[0] + ", " + coords[1] + "; " + coords[2] + ", " + coords[3] + "; " + coords[4] + ", " + coords[5]);
+					break;
+				case PathIterator.SEG_CLOSE:
+					region.close();
+System.err.println("close");
+					break;
+				default:
+					throw new RuntimeException("Unsupported segment type: " + type);
+			}
 		}
+System.err.println("shape roi done");
 		assignPropertiesToOverlay(overlay, roi);
 		return overlay;
-		*/
 	}
 
 	@SuppressWarnings("unused")

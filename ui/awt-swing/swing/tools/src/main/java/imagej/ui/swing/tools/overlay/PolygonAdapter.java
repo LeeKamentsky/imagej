@@ -82,8 +82,8 @@ public class PolygonAdapter extends
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		if ((figure != null) && (!(figure instanceof PolygonFigure))) return false;
-		return overlay instanceof PolygonOverlay;
+		if ((figure != null) && !(figure instanceof PolygonFigure)) return false;
+		return (overlay instanceof PolygonOverlay);
 	}
 
 	@Override
