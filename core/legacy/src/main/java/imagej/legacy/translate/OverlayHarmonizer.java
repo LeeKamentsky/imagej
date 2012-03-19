@@ -52,6 +52,7 @@ import imagej.data.overlay.AngleOverlay;
 import imagej.data.overlay.BinaryMaskOverlay;
 import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.EllipseOverlay;
+import imagej.data.overlay.GeneralPathOverlay;
 import imagej.data.overlay.LineOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PointOverlay;
@@ -78,6 +79,8 @@ import net.imglib2.img.transform.ImgTranslationAdapter;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.roi.CompositeRegionOfInterest;
 import net.imglib2.roi.EllipseRegionOfInterest;
+import net.imglib2.roi.GeneralPathRegionOfInterest;
+import net.imglib2.roi.GeneralPathSegmentHandler;
 import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.roi.RectangleRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
@@ -298,22 +301,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 
 	private Roi createGeneralPathRoi(final GeneralPathOverlay overlay) {
 		final GeneralPathRegionOfInterest region = overlay.getRegionOfInterest();
-		final int vertexCount = region.getVertexCount();
-		if (vertexCount == 1) return createPointRoi(overlay);
-		if (vertexCount == 2) return createLineRoi(overlay);
-		final float[] x = new float[vertexCount];
-		final float[] y = new float[vertexCount];
-		for (int v = 0; v < vertexCount; v++) {
-			final RealLocalizable vertex = region.getVertex(v);
-			x[v] = vertex.getFloatPosition(0);
-			y[v] = vertex.getFloatPosition(1);
-		}
-throw new RuntimeException("TODO");
-		/*
-		final Roi roi = new ShapeRoi(x, y, vertexCount, Roi.POLYGON);
-		assignPropertiesToRoi(roi, overlay);
-		return roi;
-		*/
+		return new ShapeRoi(region.getGeneralPath());
 	}
 
 	// NB - there is some overloading here with createPointRoi.
@@ -476,42 +464,7 @@ throw new RuntimeException("TODO");
 			case Roi.COMPOSITE:
 				Log.warn("====> COMPOSITE: " + roi);
 				final ShapeRoi shapeRoi = (ShapeRoi) roi;
-throw new RuntimeException("TODO");
-				/*
-				final Roi[] rois = shapeRoi.getRois();
-				final int xO = xOff + xOff + shapeRoi.getBounds().x;
-				final int yO = yOff + shapeRoi.getBounds().y;
-				final ArrayList<Overlay> subOverlays = new ArrayList<Overlay>();
-				for (final Roi r : rois)
-					createOverlays(r, subOverlays, xO, yO);
-				for (final Overlay overlay : subOverlays) {
-					assignPropertiesToOverlay(overlay, shapeRoi);
-				}
-				if (subOverlays.size() == 1) {
-					overlays.add(subOverlays.get(0));
-					return;
-				}
-				final CompositeRegionOfInterest croi =
-					new CompositeRegionOfInterest(2);
-				for (final Overlay overlay : subOverlays) {
-					final RegionOfInterest subRoi = overlay.getRegionOfInterest();
-					if (subRoi == null) {
-						Log.warn(String.format("Can't composite %s", overlay.toString()));
-					}
-					else {
-						croi.xor(subRoi);
-					}
-				}
-				final CompositeOverlay coverlay = new CompositeOverlay(context, croi);
-				*/
-				/*
-				 * An arbitrary guess - set the fill color to red with a 1/3 alpha
-				 */
-				/*
-				coverlay.setFillColor(new ColorRGB(255, 0, 0));
-				coverlay.setAlpha(80);
-				overlays.add(coverlay);
-				*/
+				overlays.add(createGeneralPathOverlay(shapeRoi, xOff, yOff));
 				break;
 			default:
 				Log.warn("====> OTHER (" + roi.getType() + ", " + "): " + roi);
@@ -606,7 +559,7 @@ throw new RuntimeException("TODO");
 		assert roi instanceof ShapeRoi;
 		final ShapeRoi polygonRoi = (ShapeRoi) roi;
 		final GeneralPathOverlay overlay = new GeneralPathOverlay(context);
-		final GeneralPathRegionOfInterest region = overlay.getRegionOfInterest();
+		final GeneralPathSegmentHandler region = overlay.getRegionOfInterest();
 throw new RuntimeException("TODO");
 		/*
 		final int[] xCoords = polygonRoi.getXCoordinates();

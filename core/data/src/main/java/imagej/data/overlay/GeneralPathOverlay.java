@@ -44,6 +44,7 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.meta.Axes;
 import net.imglib2.roi.GeneralPathRegionOfInterest;
+import net.imglib2.roi.GeneralPathSegmentHandler;
 
 /**
  * TODO
@@ -63,18 +64,92 @@ public class GeneralPathOverlay extends
 
 	private static final long serialVersionUID = 1L;
 
+	@SuppressWarnings("serial")
+	private class WrappedIOException extends RuntimeException {
+		final IOException ioException;
+		
+		@SuppressWarnings("unused")
+		public WrappedIOException(final IOException exception) {
+			ioException = exception;
+		}
+		
+		public IOException getIOException() {
+			return ioException;
+		}
+	}
+
 	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
 		super.writeExternal(out);
 		final GeneralPathRegionOfInterest roi = getRegionOfInterest();
-		final int vertexCount = roi.getVertexCount();
-		out.writeInt(vertexCount);
-		for (int i = 0; i < vertexCount; i++) {
-			final RealLocalizable vertex = roi.getVertex(i);
-			out.writeDouble(vertex.getDoublePosition(0));
-			out.writeDouble(vertex.getDoublePosition(1));
+		try {
+			roi.iteratePath(new GeneralPathSegmentHandler() {
+				
+				@Override
+				public void moveTo(double x, double y) {
+					try {
+						out.writeChar('M');
+						out.writeDouble(x);
+						out.writeDouble(y);
+					} catch (final IOException e) {
+						throw new WrappedIOException(e);
+					}
+				}
+				
+				@Override
+				public void lineTo(double x, double y) {
+					try {
+						out.writeChar('L');
+						out.writeDouble(x);
+						out.writeDouble(y);
+					} catch (final IOException e) {
+						throw new WrappedIOException(e);
+					}
+				}
+				
+				@Override
+				public void quadTo(double x1, double y1, double x, double y) {
+					try {
+						out.writeChar('Q');
+						out.writeDouble(x1);
+						out.writeDouble(y1);
+						out.writeDouble(x);
+						out.writeDouble(y);
+					} catch (final IOException e) {
+						throw new WrappedIOException(e);
+					}
+				}
+				
+				@Override
+				public void cubicTo(double x1, double y1, double x2, double y2, double x,
+					double y)
+				{
+					try {
+						out.writeChar('C');
+						out.writeDouble(x1);
+						out.writeDouble(y1);
+						out.writeDouble(x2);
+						out.writeDouble(y2);
+						out.writeDouble(x);
+						out.writeDouble(y);
+					} catch (final IOException e) {
+						throw new WrappedIOException(e);
+					}
+				}
+				
+				@Override
+				public void close() {
+					try {
+						out.writeChar(')');
+					} catch (final IOException e) {
+						throw new WrappedIOException(e);
+					}
+				}
+			});
+		} catch (WrappedIOException e) {
+			throw e.getIOException();
 		}
-throw new RuntimeException("TODO");
+		out.writeChar('.');
 	}
 
 	@Override
@@ -83,16 +158,29 @@ throw new RuntimeException("TODO");
 	{
 		super.readExternal(in);
 		final GeneralPathRegionOfInterest roi = getRegionOfInterest();
-		while (roi.getVertexCount() > 0) {
-			roi.removeVertex(0);
+		roi.reset();
+		for (;;) {
+			char type = in.readChar();
+			switch (type) {
+				case 'M':
+					roi.moveTo(in.readDouble(), in.readDouble());
+					break;
+				case 'L':
+					roi.lineTo(in.readDouble(), in.readDouble());
+					break;
+				case 'Q':
+					roi.quadTo(in.readDouble(), in.readDouble(), in.readDouble(), in.readDouble());
+					break;
+				case 'C':
+					roi.cubicTo(in.readDouble(), in.readDouble(), in.readDouble(), in.readDouble(), in.readDouble(), in.readDouble());
+					break;
+				case ')':
+					roi.close();
+					break;
+				case '.':
+					break;
+			}
 		}
-		final int vertexCount = in.readInt();
-		for (int i = 0; i < vertexCount; i++) {
-			final RealPoint vertex =
-				new RealPoint(new double[] { in.readDouble(), in.readDouble() });
-			roi.addVertex(i, vertex);
-		}
-throw new RuntimeException("TODO");
 	}
 
 }
