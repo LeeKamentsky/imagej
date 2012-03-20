@@ -161,7 +161,8 @@ System.err.println("Move to " + x + ", " + y);
 	});
 	while (!closePath.empty()) {
 		double[] coords = closePath.pop();
-		bezierPath.lineTo(coords[0], coords[1]);
+		if (!closePath.empty())
+			bezierPath.lineTo(coords[0], coords[1]);
 	}
 	figure.setBezierPath(bezierPath);
 }
