@@ -20,8 +20,10 @@
 
   <properties>
     <skipTests>true</skipTests>
+    <java.os.include/>
     <stack.protector.option/>
     <architecture.option/>
+    <libdl.name/>
   </properties>
 
   <build>
@@ -37,6 +39,8 @@
               <include>**/*.c</include>
             </includes>
             <options>
+	      <option>-I${JAVA_HOME}/include</option>
+	      <option>${java.os.include}</option>
               <option>${stack.protector.option}</option>
               <option>${architecture.option}</option>
             </options>
@@ -48,7 +52,7 @@
             </options>
             <sysLibs>
               <sysLib>
-                <name>dl</name>
+                <name>${libdl.name}</name>
               </sysLib>
             </sysLibs>
           </linker>
@@ -75,6 +79,7 @@
       <properties>
         <stack.protector.option>-fno-stack-protector</stack.protector.option>
         <architecture.option>-m64</architecture.option>
+	<libdl.name>dl</libdl.name>
       </properties>
     </profile>
 
@@ -89,6 +94,37 @@
       <properties>
         <stack.protector.option>-fno-stack-protector</stack.protector.option>
         <architecture.option>-m32</architecture.option>
+	<libdl.name>dl</libdl.name>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>i386-Windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+          <arch>x86</arch>
+        </os>
+      </activation>
+      <properties>
+        <java.os.include>-I${JAVA_HOME}/include/win32</java.os.include>
+        <architecture.option>-m32</architecture.option>
+        <libdl.name>kernel32</libdl.name>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>amd64-Windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+          <arch>amd64</arch>
+        </os>
+      </activation>
+      <properties>
+        <java.os.include>-I${JAVA_HOME}/include/win32</java.os.include>
+        <architecture.option>-m64</architecture.option>
+        <libdl.name>kernel32</libdl.name>
       </properties>
     </profile>
   </profiles>
