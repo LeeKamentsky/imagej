@@ -2908,12 +2908,14 @@ static void parse_command_line(void)
 	if (!get_fiji_bundle_variable("system", &arg) &&
 			atol((&arg)->buffer) > 0)
 		options.use_system_jvm++;
-	if (get_fiji_bundle_variable("ext", &ext_option))
-		string_setf(&ext_option, "%s/Home/lib/ext:"
+	if (get_fiji_bundle_variable("ext", &ext_option)) {
+		const char *java_home = get_java_home();
+		string_setf(&ext_option, "%s%s"
 			"/Library/Java/Extensions:"
 			"/System/Library/Java/Extensions:"
-			"/System/Library/Frameworks/JavaVM.framework/"
-				"Home/lib/ext", get_java_home());
+			"/System/Library/Frameworks/JavaVM.framework/Home/lib/ext",
+			java_home ? java_home : "", java_home ? "/Home/lib/ext:" : "");
+	}
 	if (!get_fiji_bundle_variable("allowMultiple", &arg))
 		allow_multiple = parse_bool((&arg)->buffer);
 	get_fiji_bundle_variable("JVMOptions", jvm_options);
@@ -3219,8 +3221,11 @@ static int start_ij(void)
 			}
 			env = NULL;
 		} else {
-			string_setf(buffer, "-Djava.home=%s", get_java_home());
-			prepend_string_copy(&options.java_options, buffer->buffer);
+			const char *java_home = get_java_home();
+			if (java_home) {
+				string_setf(buffer, "-Djava.home=%s", java_home);
+				prepend_string_copy(&options.java_options, buffer->buffer);
+			}
 		}
 	}
 
@@ -3274,6 +3279,8 @@ static int start_ij(void)
 #endif
 
 		for (i = 0; properties[i]; i += 2) {
+			if (!properties[i] || !properties[i + 1])
+				continue;
 			string_setf(buffer, "-D%s=%s", properties[i], properties[i + 1]);
 			add_option_string(&options, buffer, 0);
 		}
