@@ -1,2 +1,2 @@
 #!/bin/sh
-java -Xmx512m -cp 'plugins:plugins/*:jar/*' imagej.Main $@
+java -Xmx512m -cp 'plugins:plugins/*:jars/*' imagej.Main $@
