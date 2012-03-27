@@ -31,6 +31,7 @@
     </dependencySet>
   </dependencySets>
   <files>
+<!--
     <file>
       <source>target/ij-launcher.jar</source>
       <outputDirectory>jars/</outputDirectory>
@@ -47,13 +48,13 @@
       <destName>ImageJ-linux64</destName>
       <fileMode>0755</fileMode>
     </file>
-<!--
     <file>
       <source>target/bin/x86_64-MacOSX-gcc/ij-launcher</source>
       <outputDirectory>ImageJ64.app/Contents/MacOS/</outputDirectory>
       <destName>ImageJ-macosx</destName>
       <fileMode>0755</fileMode>
     </file>
+-->
     <file>
       <source>target/bin/i386-MacOSX-gcc/ij-launcher</source>
       <outputDirectory>ImageJ32.app/Contents/MacOS/</outputDirectory>
@@ -70,6 +71,5 @@
       <destName>ImageJ-win64.exe</destName>
       <fileMode>0755</fileMode>
     </file>
--->
   </files>
 </assembly>
