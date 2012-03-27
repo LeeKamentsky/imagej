@@ -47,6 +47,7 @@
       <destName>ImageJ-linux64</destName>
       <fileMode>0755</fileMode>
     </file>
+<!--
     <file>
       <source>target/bin/x86_64-MacOSX-gcc/ij-launcher</source>
       <outputDirectory>ImageJ64.app/Contents/MacOS/</outputDirectory>
@@ -69,5 +70,6 @@
       <destName>ImageJ-win64.exe</destName>
       <fileMode>0755</fileMode>
     </file>
+-->
   </files>
 </assembly>
