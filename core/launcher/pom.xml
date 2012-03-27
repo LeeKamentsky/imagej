@@ -43,6 +43,7 @@
 	      <option>${java.os.include}</option>
               <option>${stack.protector.option}</option>
               <option>${architecture.option}</option>
+              <option>-g</option>
             </options>
           </c>
           <linker>
@@ -148,6 +149,7 @@
                   <option>i386</option>
                   <option>-arch</option>
                   <option>x86_64</option>
+                  <option>-g</option>
                 </options>
               </c>
               <linker>
