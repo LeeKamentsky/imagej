@@ -6,9 +6,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.github.scijava</groupId>
+		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>1.6</version>
+		<version>1.7</version>
 	</parent>
 
 	<groupId>net.imagej</groupId>
@@ -39,6 +39,8 @@
 Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
 Institute of Molecular Cell Biology and Genetics.</organizationName>
 					<projectName>ImageJ software for multidimensional image processing and analysis.</projectName>
+					<canUpdateDescription>true</canUpdateDescription>
+					<canUpdateCopyright>true</canUpdateCopyright>
 				</configuration>
 			</plugin>
 			<plugin>

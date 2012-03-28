@@ -1,3 +1,0 @@
-attribution "This image courtesy of Spike Walker (CC)"
-color 255 140 0
-fontsize 50

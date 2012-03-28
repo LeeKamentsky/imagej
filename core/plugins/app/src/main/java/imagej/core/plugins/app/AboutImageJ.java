@@ -1,36 +1,37 @@
-//
-// AboutImageJ.java
-//
-
 /*
-ImageJ software for multidimensional image processing and analysis.
-
-Copyright (c) 2010, ImageJDev.org.
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the names of the ImageJDev.org developers nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-*/
+ * #%L
+ * ImageJ software for multidimensional image processing and analysis.
+ * %%
+ * Copyright (C) 2009 - 2012 Board of Regents of the University of
+ * Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
+ * Institute of Molecular Cell Biology and Genetics.
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are
+ * those of the authors and should not be interpreted as representing official
+ * policies, either expressed or implied, of any organization.
+ * #L%
+ */
 
 package imagej.core.plugins.app;
 
@@ -42,6 +43,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -106,7 +108,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	private List<String> attributionStrings = new LinkedList<String>();
 	private ColorRGB textColor = Colors.YELLOW;
 	private ColorRGB outlineColor = Colors.BLACK;
-	private int largestFontSize = 30;
+	private int largestFontSize = 35;
 	private ChannelCollection textChannels = null;
 	private ChannelCollection outlineChannels = null;
 	
@@ -164,7 +166,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 			Log.warn("Could not load a 3 channel unsigned 8 bit image as backdrop");
 			// make a black 3 channel 8-bit unsigned background image.
 			ds = dataSrv.create(
-				new long[]{400,400,3} , title,
+				new long[]{500,500,3} , title,
 				new AxisType[]{Axes.X,Axes.Y,Axes.CHANNEL}, 8, false, false);
 		}
 		
@@ -190,12 +192,20 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	}
 
 	/**
-	 * Returns the URL of a backdrop image
+	 * Returns the URL of a backdrop image. Chooses a random image from the list
+	 * of images present.
 	 */
 	private URL getImageURL() {
-		// TODO - cycle through one of many
-		final String fname = "/images/image2.tif";  // NB - THIS PATH IS CORRECT 
-		return getClass().getResource(fname);
+		final List<URL> fileURLs = new LinkedList<URL>();
+		for (int i = 0; i < 40; i++) {
+			final URL url = getClass().getResource("/images/about"+i+".tif");
+			if (url != null) fileURLs.add(url);
+		}
+		if (fileURLs.size() == 0) return null;
+		final Random rng = new Random();
+		rng.setSeed(System.currentTimeMillis());
+		final int index = rng.nextInt(fileURLs.size());
+		return fileURLs.get(index);
 	}
 
 	/**
@@ -313,7 +323,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		final String fileName = baseFileName + ".txt";
 		final File file = new File(fileName);
 		if (file.exists()) {
-			final Pattern attributionPattern = Pattern.compile("attribution\\s+\"(.*)\"");
+			final Pattern attributionPattern = Pattern.compile("attribution\\s+(.*)");
 			final Pattern colorPattern = Pattern.compile("color\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)");
 			final Pattern fontsizePattern = Pattern.compile("fontsize\\s+([1-9][0-9]*)");
 			try {
