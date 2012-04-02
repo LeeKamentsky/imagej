@@ -36,25 +36,21 @@
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.io.event.FileOpenedEvent;
+import imagej.io.IOService;
+import imagej.ui.DialogPrompt;
+import imagej.ui.UIService;
 import imagej.util.Log;
 
 import java.io.File;
 
-import loci.common.StatusListener;
 import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.io.ImgIOException;
-import net.imglib2.io.ImgOpener;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
@@ -62,6 +58,7 @@ import net.imglib2.type.numeric.RealType;
  * Opens the selected file as a {@link Dataset}.
  * 
  * @author Curtis Rueden
+ * @author Mark Hiner
  */
 @Plugin(iconPath = "/icons/plugins/folder_picture.png", menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
@@ -69,14 +66,14 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Open...", weight = 1, mnemonic = 'o',
 		accelerator = "control O") })
 public class OpenImage<T extends RealType<T> & NativeType<T>> implements
-	ImageJPlugin, StatusListener
+	ImageJPlugin
 {
 
 	@Parameter(persist = false)
-	private DatasetService datasetService;
+	private IOService ioService;
 
 	@Parameter(persist = false)
-	private EventService eventService;
+	private UIService uiService;
 
 	@Parameter(label = "File to open")
 	private File inputFile;
@@ -86,21 +83,19 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 
 	@Override
 	public void run() {
-		final String id = inputFile.getAbsolutePath();
-
-		// open image
-		final ImgOpener imageOpener = new ImgOpener();
+		final String source = inputFile.getAbsolutePath();
 		try {
-			imageOpener.addStatusListener(this);
-			final ImgPlus<T> imgPlus = imageOpener.openImg(id);
-			dataset = datasetService.create(imgPlus);
-			eventService.publish(new FileOpenedEvent(id));
+			dataset = ioService.loadDataset(source);
 		}
 		catch (final ImgIOException e) {
 			Log.error(e);
+			uiService.showDialog(e.getMessage(), "ImageJ",
+				DialogPrompt.MessageType.ERROR_MESSAGE);
 		}
 		catch (final IncompatibleTypeException e) {
 			Log.error(e);
+			uiService.showDialog(e.getMessage(), "ImageJ",
+				DialogPrompt.MessageType.ERROR_MESSAGE);
 		}
 	}
 
@@ -118,25 +113,6 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
-	}
-
-	private long lastTime;
-
-	@Override
-	public void statusUpdated(final loci.common.StatusEvent e) {
-		final long time = System.currentTimeMillis();
-		final int progress = e.getProgressValue();
-		final int maximum = e.getProgressMaximum();
-		final String message = e.getStatusMessage();
-		final boolean warn = e.isWarning();
-
-		// don't update more than 20 times/sec
-		if (time - lastTime < 50 && progress > 0 && progress < maximum && !warn) {
-			return;
-		}
-		lastTime = time;
-
-		eventService.publish(new StatusEvent(progress, maximum, message, warn));
 	}
 
 }

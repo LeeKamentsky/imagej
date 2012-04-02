@@ -43,4 +43,13 @@
 		</repository>
 	</repositories>
 
+	<profiles>
+		<profile>
+			<id>launcher</id>
+			<modules>
+				<module>launcher</module>
+			</modules>
+		</profile>
+	</profiles>
+
 </project>

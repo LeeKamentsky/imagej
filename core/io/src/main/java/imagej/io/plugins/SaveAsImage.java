@@ -33,39 +33,10 @@
  * #L%
  */
 
-/*
-ImageJ software for multidimensional image processing and analysis.
-
-Copyright (c) 2010, ImageJDev.org.
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the names of the ImageJDev.org developers nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-*/
-
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
+import imagej.event.EventService;
 import imagej.ext.display.Display;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ui.WidgetStyle;
@@ -73,6 +44,8 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.io.StatusDispatcher;
+import imagej.io.event.FileSavedEvent;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.UIService;
@@ -82,8 +55,8 @@ import java.io.File;
 
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
-import ome.scifio.img.ImgIOException;
-import ome.scifio.img.ImgSaver;
+import net.imglib2.io.ImgIOException;
+import net.imglib2.io.ImgSaver;
 
 /**
  * Saves the current {@link Dataset} to disk using a user-specified file name.
@@ -97,9 +70,13 @@ import ome.scifio.img.ImgSaver;
 public class SaveAsImage implements ImageJPlugin {
 
 	@Parameter(persist = false)
+	private EventService eventService;
+
+	@Parameter(persist = false)
 	private UIService uiService;
 
-	@Parameter(style = WidgetStyle.FILE_SAVE)
+	@Parameter(label = "File to save", style = WidgetStyle.FILE_SAVE,
+		initializer = "initOutputFile", persist = false)
 	private File outputFile;
 
 	@Parameter
@@ -108,11 +85,16 @@ public class SaveAsImage implements ImageJPlugin {
 	@Parameter
 	private Display<?> display;
 
+	public void initOutputFile() {
+		outputFile = new File(dataset.getImgPlus().getSource());
+	}
+
 	@Override
 	public void run() {
 		@SuppressWarnings("rawtypes")
 		final ImgPlus img = dataset.getImgPlus();
 		boolean overwrite = true;
+		Result result = null;
 
 		// TODO prompts the user if the file is dirty or being saved to a new
 		// location. Could remove the isDirty check to always overwrite the current
@@ -121,29 +103,44 @@ public class SaveAsImage implements ImageJPlugin {
 			(dataset.isDirty() || !outputFile.getAbsolutePath().equals(
 				img.getSource())))
 		{
-			final Result result =
+			result =
 				uiService.showDialog("\"" + outputFile.getName() +
 					"\" already exists. Do you want to replace it?", "Save [IJ2]",
-					DialogPrompt.MessageType.QUESTION_MESSAGE,
+					DialogPrompt.MessageType.WARNING_MESSAGE,
 					DialogPrompt.OptionType.YES_NO_OPTION);
 			overwrite = result == DialogPrompt.Result.YES_OPTION;
 		}
 
 		if (overwrite) {
 			final ImgSaver imageSaver = new ImgSaver();
+			boolean saveImage = true;
 			try {
+				imageSaver.addStatusListener(new StatusDispatcher(eventService));
+
+				if (imageSaver.isCompressible(img)) result =
+					uiService.showDialog("Your image contains axes other than XYZCT.\n"
+						+ "When saving, these may be compressed to the "
+						+ "Channel axis (or the save process may simply fail).\n"
+						+ "Would you like to continue?", "Save [IJ2]",
+						DialogPrompt.MessageType.WARNING_MESSAGE,
+						DialogPrompt.OptionType.YES_NO_OPTION);
+
+				saveImage = result == DialogPrompt.Result.YES_OPTION;
 				imageSaver.saveImg(outputFile.getAbsolutePath(), img);
+				eventService.publish(new FileSavedEvent(img.getSource()));
 			}
 			catch (final ImgIOException e) {
 				Log.error(e);
+				uiService.showDialog(e.getMessage(), "IJ2: Save Error",
+					DialogPrompt.MessageType.ERROR_MESSAGE);
 				return;
 			}
 			catch (final IncompatibleTypeException e) {
 				Log.error(e);
+				uiService.showDialog(e.getMessage(), "IJ2: Save Error",
+					DialogPrompt.MessageType.ERROR_MESSAGE);
 				return;
 			}
-			dataset.setName(outputFile.getName());
-			dataset.setDirty(false);
 
 			display.setName(outputFile.getName());
 			display.update();
