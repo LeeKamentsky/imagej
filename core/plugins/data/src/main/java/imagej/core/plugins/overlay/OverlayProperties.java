@@ -66,7 +66,9 @@ import java.util.List;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "Properties...", mnemonic = 'p') }, headless = true)
+	@Menu(label = "Properties...", mnemonic = 'p') }, 
+	headless = true,
+	initializer = "initialize")
 public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 
 	static final protected String solidLineStyle = "Solid";
@@ -77,7 +79,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	static final protected String arrowLineDecoration = "Arrow";
 	static final protected String noLineDecoration = "None";
 
-	@Parameter
+	@Parameter(callback="initialize")
 	private ImageDisplay display;
 
 	@Parameter(label = "Line color", persist = false)
@@ -114,8 +116,15 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 
 	@Parameter(persist = false)
 	private OptionsService os;
-
+	
 	public OverlayProperties() {
+	}
+	
+	/**
+	 * Initialize all elements if the display has changed
+	 */
+	@SuppressWarnings("unused")
+	private void initialize() {
 		// set default values to match the first selected overlay
 		final List<Overlay> selected = getSelectedOverlays();
 		if (selected.size() > 0) {
